@@ -587,7 +587,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 3
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -629,8 +629,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da09254b6165100438fdac8381fa3560, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MovimentoGiocatore
-  velocita: 5
-  salto: 7
+  velocita: 7
+  salto: 11
 --- !u!61 &831115120
 BoxCollider2D:
   m_ObjectHideFlags: 0
