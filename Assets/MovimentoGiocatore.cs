@@ -4,7 +4,9 @@ using System.Collections;
 
 public class MovimentoGiocatore : MonoBehaviour
 {
-    public float velocita = 5f;
+    public float velocita;
+    public float velocitaBase = 5f;
+    public float velocitaCorsa = 9f;
     public float salto = 7f;
     private Rigidbody2D rb;
     private float MovimentoOrizzontale;
@@ -15,6 +17,7 @@ public class MovimentoGiocatore : MonoBehaviour
     void Start() 
     {
         rb = GetComponent<Rigidbody2D>();
+        velocita = velocitaBase;
     }
 
     void OnMove(InputValue value) 
@@ -33,6 +36,18 @@ public class MovimentoGiocatore : MonoBehaviour
         }
     }
 
+    void OnSprint(InputValue value)
+    {
+        if (value.isPressed)
+        {
+            velocita = velocitaCorsa;
+        }
+        else
+        {
+            velocita = velocitaBase;
+        }
+    }
+
     void FixedUpdate() 
     {
         MovimentoVerticale = rb.linearVelocity.y;
@@ -45,6 +60,7 @@ public class MovimentoGiocatore : MonoBehaviour
 
         rb.linearVelocity = new Vector2(MovimentoOrizzontale * velocita, MovimentoVerticale);
     }
+
 
     // Metodo pubblico per avviare il blocco del salto
     public void DisabilitaSaltoPerTempo(float secondi) {
