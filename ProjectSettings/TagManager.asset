@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Pavimento
   - Muro
+  - Ostacolo
   layers:
   - Default
   - TransparentFX
