@@ -1,23 +1,49 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using System.Collections;
+using Unity.VisualScripting;
+using System;
 
 public class MovimentoGiocatore : MonoBehaviour
 {
-    public float velocita;
-    public float velocitaBase = 5f;
-    public float velocitaCorsa = 9f;
-    public float salto = 7f;
-    private Rigidbody2D rb;
+    [Serializable]
+    public struct DatiMovimento
+    {
+        [HideInInspector] public float Velocita;
+        public float VelocitaBase;
+        public float VelocitaCorsa;
+    }
+
+    [Serializable]
+    public struct DatiSalto
+    {
+        public float ForzaSalto;
+        public bool InSalto;
+        public bool SaltoPossibile;
+    }
+
+    [Serializable]
+    public struct DatiDash
+    {
+        public bool DashPossibile;
+        public bool InDash;
+        public float DurataDash;
+        public float CooldownDash;
+        public float ForzaDash;
+    }
+
+    public DatiMovimento movimento = new DatiMovimento { VelocitaBase = 5f, VelocitaCorsa = 11f };
+    public DatiSalto salto = new DatiSalto { SaltoPossibile = true, ForzaSalto = 7f };
+    public DatiDash dash = new DatiDash { DashPossibile = true, InDash = false, DurataDash = 0.2f, CooldownDash = 0.5f, ForzaDash = 18f };
+    
     private float MovimentoOrizzontale;
     private float MovimentoVerticale;
-    private bool jump;
-    private bool SaltoPossibile = true;
+    private Rigidbody2D rb;
 
     void Start() 
     {
         rb = GetComponent<Rigidbody2D>();
-        velocita = velocitaBase;
+        movimento.Velocita = movimento.VelocitaBase;
     }
 
     void OnMove(InputValue value) 
@@ -28,10 +54,10 @@ public class MovimentoGiocatore : MonoBehaviour
 
     void OnJump(InputValue value)
     {
-        if (value.isPressed && SaltoPossibile)
+        if (value.isPressed && salto.SaltoPossibile)
         {
-            jump = true;
-            SaltoPossibile = false;
+            salto.InSalto = true;
+            salto.SaltoPossibile = false;
             //DisabilitaSaltoPerTempo(2*(salto/9.81f));
         }
     }
@@ -40,45 +66,71 @@ public class MovimentoGiocatore : MonoBehaviour
     {
         if (value.isPressed)
         {
-            velocita = velocitaCorsa;
+            movimento.Velocita = movimento.VelocitaCorsa;
         }
         else
         {
-            velocita = velocitaBase;
+            movimento.Velocita = movimento.VelocitaBase;
+        }
+    }
+
+
+    void OnDash(InputValue value)
+    {
+        if (dash.DashPossibile && value.isPressed)
+        {
+            StartCoroutine(EseguiDash());
         }
     }
 
     void FixedUpdate() 
     {
+        if (dash.InDash) return;
+
         MovimentoVerticale = rb.linearVelocity.y;
 
-        if (jump)
+        if (salto.InSalto)
         {
-            MovimentoVerticale = salto;
-            jump = false;
+            MovimentoVerticale = salto.ForzaSalto;
+            salto.InSalto = false;
         }
 
-        rb.linearVelocity = new Vector2(MovimentoOrizzontale * velocita, MovimentoVerticale);
-    }
-
-
-    // Metodo pubblico per avviare il blocco del salto
-    public void DisabilitaSaltoPerTempo(float secondi) {
-        StartCoroutine(RoutineDisabilitaSalto(secondi));
+        rb.linearVelocity = new Vector2(MovimentoOrizzontale * movimento.Velocita, MovimentoVerticale);
     }
 
     // Coroutine che gestisce l'attesa temporizzata
     private IEnumerator RoutineDisabilitaSalto(float secondi) {
-        SaltoPossibile = false;
+        salto.SaltoPossibile = false;
         yield return new WaitForSeconds(secondi); 
-        SaltoPossibile = true;
+        salto.SaltoPossibile = true;
+    }
+
+    private IEnumerator EseguiDash() {
+        dash.DashPossibile = false;
+        dash.InDash = true;
+
+        float gravita = rb.gravityScale;
+        rb.gravityScale = 0f;
+
+        float direzione = MovimentoOrizzontale != 0 ? Mathf.Sign(MovimentoOrizzontale) : transform.localScale.x;
+        rb.linearVelocity = new Vector2(dash.ForzaDash * direzione, 0f);
+
+        yield return new WaitForSeconds(dash.DurataDash);
+       
+        rb.gravityScale = gravita;
+        movimento.Velocita = movimento.VelocitaBase;
+
+        yield return new WaitForSeconds(dash.CooldownDash); 
+        
+        dash.InDash = false;
+        dash.DashPossibile = true;
     }
 
     public void OnCollisionEnter2D(Collision2D collision)
     {
         if (collision.gameObject.CompareTag("Pavimento"))
         {
-            SaltoPossibile = true;
+            salto.SaltoPossibile = true;
         }     
     }
 }

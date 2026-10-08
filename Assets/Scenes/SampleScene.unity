@@ -771,8 +771,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da09254b6165100438fdac8381fa3560, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MovimentoGiocatore
-  velocita: 7
-  salto: 11
+  movimento:
+    Velocita: 0
+    VelocitaBase: 5
+    VelocitaCorsa: 11
+  salto:
+    ForzaSalto: 11
+    InSalto: 0
+    SaltoPossibile: 1
+  dash:
+    DashPossibile: 1
+    InDash: 0
+    DurataDash: 0.2
+    CooldownDash: 0.5
+    ForzaDash: 15
 --- !u!61 &831115120
 BoxCollider2D:
   m_ObjectHideFlags: 0
