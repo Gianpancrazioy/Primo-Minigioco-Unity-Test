@@ -1325,7 +1325,7 @@ GameObject:
   - component: {fileID: 929812137}
   - component: {fileID: 929812136}
   - component: {fileID: 929812135}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Pavimento
   m_TagString: Pavimento
   m_Icon: {fileID: 0}

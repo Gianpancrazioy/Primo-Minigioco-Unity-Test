@@ -41,7 +41,7 @@ public class SpawnerProiettiliLenti : MonoBehaviour
         {   
             yield return new WaitForSeconds(spawn.CooldownIniziale);
 
-            while (true)
+            for(int i = 0; i < 2; i++)
             {
                 Spara();
                 yield return new WaitForSeconds(spawn.Cooldown);
