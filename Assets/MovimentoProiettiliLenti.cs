@@ -1,7 +1,5 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 using System.Collections;
-using Unity.VisualScripting;
 using System;
 
 public class MovimentoProiettiliLenti : MonoBehaviour
@@ -52,6 +50,10 @@ public class MovimentoProiettiliLenti : MonoBehaviour
         [SerializeField] private float DistanzaRilevamentoTerreno = 1.5f; 
         [SerializeField] private LayerMask LayerPavimento;
         private SpriteRenderer spriteRenderer;
+
+        [Header("Impostazioni Orientamento Sprite")]
+        [Tooltip("Spunta questa casella se nel file dello Sprite la punta del triangolo guarda verso l'alto.")]
+        [SerializeField] private bool PuntaGuardaInAlto = true;
     #endregion
 
     #region METODI BASE DI UNITY E COLLISIONI
@@ -83,9 +85,23 @@ public class MovimentoProiettiliLenti : MonoBehaviour
             }
             rb.linearVelocity = Direzione * movimento.Velocita;
             
-            // 2. Controllo vicinanza al terreno tramite Raycast2D verso il basso
+            RuotaVersoDirezione(Direzione);
             ControllaVicinanzaTerreno();
     }
+
+    private void RuotaVersoDirezione(Vector2 direzione)
+        {
+            if (direzione == Vector2.zero) return;
+
+            float angolo = Mathf.Atan2(direzione.y, direzione.x) * Mathf.Rad2Deg;
+
+            if (PuntaGuardaInAlto)
+            {
+                angolo -= 90f;
+            }
+
+            transform.rotation = Quaternion.Euler(0, 0, angolo);
+        }
 
         void OnTriggerEnter2D(Collider2D collision)
         {
